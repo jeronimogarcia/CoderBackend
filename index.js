@@ -43,11 +43,11 @@ class ProductManager {
 }
 
 const productsManager = new ProductManager();
-productsManager.addProducts("Fideos", "En paquete", 50, "urlImg01", 12, 5);
-productsManager.addProducts("Polenta", "En bolsa", 70, "urlImg02", 23, 10);
-productsManager.addProducts("Arroz", "En caja", 100, "urlImg03", 34, 30);
-productsManager.addProducts("Arroz", "En caja", 20, "urlImg04", 23, 30);
-productsManager.addProducts("Tomates", "En lata", 150, "urlImg05", 8, 10);
+productsManager.addProducts('Fideos', 'En paquete', 50, 'urlImg01', 12, 5);
+productsManager.addProducts('Polenta', 'En bolsa', 70, 'urlImg02', 23, 10);
+productsManager.addProducts('Arroz', 'En caja', 100, 'urlImg03', 34, 30);
+productsManager.addProducts('Arroz', 'En caja', 20, 'urlImg04', 23, 30);
+productsManager.addProducts('Tomates', 'En lata', 150, 'urlImg05', 8, 10);
 
 productsManager.getProducts();
 productsManager.getProductById(2);
