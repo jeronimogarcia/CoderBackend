@@ -1,7 +1,7 @@
 // TP-Manejo-de-archivos-js
-const fs = require('fs');
+import fs from 'fs';
 
-class ProductManager {
+export class ProductManager {
   constructor(path) {
     this.products = [];
     this.lastId = 1;
@@ -96,27 +96,27 @@ class ProductManager {
   }
 }
 
-const productsManager = new ProductManager('./productos.txt');
-productsManager.addProducts('Fideos', 'En paquete', 50, 'urlImg01', 12, 5);
-productsManager.addProducts('Polenta', 'En bolsa', 70, 'urlImg02', 23, 10);
-productsManager.addProducts('Arroz', 'En caja', 100, 'urlImg03', 34, 30);
-productsManager.addProducts('Tomates', 'En lata', 150, 'urlImg04', 8, 2);
+// const productsManager = new ProductManager('../files/productos.txt');
+// productsManager.addProducts('Fideos', 'En paquete', 50, 'urlImg01', 12, 5);
+// productsManager.addProducts('Polenta', 'En bolsa', 70, 'urlImg02', 23, 10);
+// productsManager.addProducts('Arroz', 'En caja', 100, 'urlImg03', 34, 30);
+// productsManager.addProducts('Tomates', 'En lata', 150, 'urlImg04', 8, 2);
 
-// Error por codigo repetido
-productsManager.addProducts('Alfajores', 'En caja', 20, 'urlImg05', 23, 30);
-// Error por stock negativo
-productsManager.addProducts('Aceitunas', 'En lata', 220, 'urlImg06', 8, -4);
-// Error por campo vacio
-productsManager.addProducts('Manzanas', 'En caja', 280, 9, 20);
-// Actualizado de precio, producto con ID: 2
-productsManager.updateProduct(2, { price: 700 });
-// Obtener producto por ID
-productsManager.getProductById(2);
-// Error al obtener producto por ID inexistente
-productsManager.getProductById(10);
-// Borrado de producto por ID
-productsManager.deleteProduct(3);
-// Intento borrado de producto con ID inexistente
-productsManager.deleteProduct(16);
+// // Error por codigo repetido
+// productsManager.addProducts('Alfajores', 'En caja', 20, 'urlImg05', 23, 30);
+// // Error por stock negativo
+// productsManager.addProducts('Aceitunas', 'En lata', 220, 'urlImg06', 8, -4);
+// // Error por campo vacio
+// productsManager.addProducts('Manzanas', 'En caja', 280, 9, 20);
+// // Actualizado de precio, producto con ID: 2
+// productsManager.updateProduct(2, { price: 700 });
+// // Obtener producto por ID
+// productsManager.getProductById(2);
+// // Error al obtener producto por ID inexistente
+// productsManager.getProductById(10);
+// // Borrado de producto por ID
+// productsManager.deleteProduct(3);
+// // Intento borrado de producto con ID inexistente
+// productsManager.deleteProduct(16);
 
-productsManager.getProducts();
+// productsManager.getProducts();
