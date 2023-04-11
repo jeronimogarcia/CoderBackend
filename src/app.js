@@ -2,15 +2,14 @@ import express from 'express';
 import fs from 'fs';
 import { ProductManager } from './modules/product-manager.js';
 
-const productsManager = new ProductManager('./files/productos.txt');
+const PORT = 8080;
+const app = express();
+const PATH = './files/productos.json';
+const productsManager = new ProductManager(PATH);
 productsManager.addProducts('Fideos', 'En paquete', 50, 'urlImg01', 12, 5);
 productsManager.addProducts('Polenta', 'En bolsa', 70, 'urlImg02', 23, 10);
 productsManager.addProducts('Arroz', 'En caja', 100, 'urlImg03', 34, 30);
 productsManager.addProducts('Tomates', 'En lata', 150, 'urlImg04', 8, 2);
-
-const PORT = 8080;
-const PATH = './files/productos.txt';
-const app = express();
 
 app.get('/products', (req, res) => {
   const limit = req.query.limit;
@@ -22,7 +21,7 @@ app.get('/products', (req, res) => {
 app.get('/products/:pid', (req, res) => {
   const idProduct = req.params.pid;
   const allProducts = JSON.parse(fs.readFileSync(PATH, 'utf8'));
-  const product = allProducts.find((product) => product.id === +idProduct);
+  const product = allProducts.find(product => product.id === +idProduct);
   if (product) {
     res.send(product);
   } else {
