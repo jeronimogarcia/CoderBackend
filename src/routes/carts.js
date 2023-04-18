@@ -14,7 +14,7 @@ router.get("/:cid", (req, res) => {
   res.status(cart.stat).send(cart.msg);
 });
 
-router.post("/:cid", (req, res) => {
+router.post("/:cid/products", (req, res) => {
   const cid = +req.params.cid;
   const pid = +req.body.id;
   const updatedCart = cartManager.updateProductById(cid, pid, req.body);
