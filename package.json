@@ -2,23 +2,25 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node ./src/server"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jeronimogarcia/CoderBackend.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jeronimo S. Garcia",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jeronimogarcia/CoderBackend/issues"
   },
   "homepage": "https://github.com/jeronimogarcia/CoderBackend#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.7"
   }
 }
