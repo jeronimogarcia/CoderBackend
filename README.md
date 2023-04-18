@@ -16,6 +16,10 @@ npm run dev
 
 Se trabajo con fs para la permanencia de archivos. Borrar productos.json o carritos.json de ./src/files si es necesario.
 
+## Postman
+
+Documentacion de postman en postman.json
+
 ## Routes
 
 ### products
