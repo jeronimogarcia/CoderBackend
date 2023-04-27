@@ -7,7 +7,9 @@ router.get("/", (req, res) => {
   const limit = +req.query.limit;
   const products = productsManager.getProducts();
   const allProducts = limit ? products.slice(0, limit) : products;
-  res.status(200).send({ success: true, data: allProducts });
+  // res.status(200).send({ success: true, data: allProducts });
+  console.log(allProducts);
+  res.render("index", { products: allProducts });
 });
 
 router.get("/:pid", (req, res) => {

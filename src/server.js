@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import products from "./routes/products.js";
 import carts from "./routes/carts.js";
+import { engine } from "express-handlebars";
 import { ProductManager } from "./modules/product-manager.js";
 import { CartManager } from "./modules/cart-manager.js";
 
@@ -9,6 +10,13 @@ const app = express();
 app.use(express.json());
 dotenv.config({ path: "./src/config/config.env" });
 const PORT = process.env.PORT || 8080;
+
+app.use("/api/carts", carts);
+app.use("/api/products", products);
+
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
 
 const PATH = "./src/files/productos.json";
 const CARTPATH = "./src/files/carritos.json";
@@ -55,8 +63,11 @@ productsManager.addProducts(
   2
 );
 
-app.use("/api/products", products);
-app.use("/api/carts", carts);
+// app.get("/api/products", (req, res) => {
+//   res.render("index", {
+//     products: products,
+//   });
+// });
 
 app.listen(PORT, () => {
   console.log(
