@@ -1,0 +1,98 @@
+<div>
+  <h1 class="text-center mt-5 mb-5">Lista de smallProducts. Websocket</h1>
+  <div class="w-75 m-auto mb-5">
+    <table class="table table-sm table-bordered table-dark w-60%">
+      <thead>
+        <tr>
+          <th scope="col">Producto</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Categoria</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        {{#each products}}
+          <tr>
+            <td>{{title}}</td>
+            <td>${{price}}</td>
+            <td>{{stock}}</td>
+            <td>{{category}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <h1 class="text-center mt-5 mb-2">Agregar Producto</h1>
+  <form class="w-75 m-auto" id="form"> 
+  <div class="mb-3">
+    <label class="form-label">Nombre Producto</label>
+    <input type="text" class="form-control" id="exampleName">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Price</label>
+    <input type="number" class="form-control" id="examplePrice">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Categoria</label>
+    <input type="text" class="form-control" id="exampleCategory">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Stock</label>
+    <input type="number" class="form-control" id="exampleStock">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+</div>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"
+></script>
+<script>
+  const ws = io('ws://localhost:8000'); 
+
+  const form = document.getElementById('form');
+  const nameInput = document.getElementById('exampleName');
+  const priceInput = document.getElementById('examplePrice');
+  const categoryInput = document.getElementById('exampleCategory');
+  const stockInput = document.getElementById('exampleStock');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const newProduct = {
+      name: nameInput.value,
+      price: priceInput.value,
+      category: categoryInput.value,
+      stock: stockInput.value
+    }
+    ws.emit('newProduct', newProduct);
+  })
+
+  ws.on('newList', function(newList) {
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = ''; 
+
+    newList.forEach(function (product){
+    const row = document.createElement('tr');
+
+    const nameTd = document.createElement('td');
+    nameTd.textContent = product.title;
+    row.appendChild(nameTd);
+
+    const priceTd = document.createElement('td');
+    priceTd.textContent = '$' + product.price;
+    row.appendChild(priceTd);
+
+    const stockTd = document.createElement('td');
+    stockTd.textContent = product.stock;
+    row.appendChild(stockTd);
+
+    const categoryTd = document.createElement('td');
+    categoryTd.textContent = product.category;
+    row.appendChild(categoryTd);
+
+    tableBody.appendChild(row); 
+    });
+  })
+</script>

@@ -1,33 +1,25 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lista Productos</title>
-  </head>
-  <body class="bg-light">
-    <h1 class="text-center mt-5 mb-5">Lista Productos</h1>
-    <div class="w-75 m-auto">
-      <table class="table table-sm table-bordered table-dark w-60%">
-        <thead>
+<div>
+  <h1 class="text-center mt-5 mb-5">Lista de productos</h1>
+  <div class="w-75 m-auto">
+    <table class="table table-sm table-bordered table-dark w-60%">
+      <thead>
+        <tr>
+          <th scope="col">Producto</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Categoria</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each products}}
           <tr>
-            <th scope="col">Producto</th>
-            <th scope="col">Precio</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Categoria</th>
+            <td>{{title}}</td>
+            <td>${{price}}</td>
+            <td>{{stock}}</td>
+            <td>{{category}}</td>
           </tr>
-        </thead>
-        <tbody>
-          {{#each products}}
-            <tr>
-              <td>{{title}}</td>
-              <td>{{price}}</td>
-              <td>{{stock}}</td>
-              <td>{{category}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-  </body>
-</html>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
