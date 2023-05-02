@@ -12,6 +12,12 @@ npm install
 npm run dev
 ```
 
+El servidor corre en el puerto 3000 (http://localhost:3000)
+El servidor http corre en el puerto 8000
+
+http://localhost:3000 Se visualiza la tabla de productos
+http://localhost:3000/realtimeproducts Se realiza conexion con socket.io de forma bilateral. Se pueden agregar productos a la lista y se actualizara de forma automatica.
+
 ## Files
 
 Se trabajo con fs para la permanencia de archivos. Borrar productos.json o carritos.json de ./src/files si es necesario.
