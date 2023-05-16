@@ -61,9 +61,10 @@
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const newProduct = {
-      name: nameInput.value,
+      title: nameInput.value,
       price: priceInput.value,
       category: categoryInput.value,
+      description: 'New Description',
       stock: stockInput.value
     }
     ws.emit('newProduct', newProduct);

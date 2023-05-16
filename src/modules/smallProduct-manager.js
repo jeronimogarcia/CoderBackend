@@ -1,125 +1,119 @@
-import fs from "fs";
+import mongoose from "mongoose";
+import smallPoductModel from "../models/smallProductsModel.js";
 
-export class SmallProductManager {
-  constructor(path) {
-    this.path = path;
+export class SmallProducts {
+  constructor() {
+    this.status = 0;
+    this.statusMsg = "Inicializado";
+  }
 
-    let localProducts;
-    let lastId;
+  static requiredFields = [
+    "description",
+    "price",
+    "stock",
+    "title",
+    "category",
+  ];
+
+  static #verifyRequiredFields = (obj) => {
+    return SmallProducts.requiredFields.every(
+      (field) =>
+        Object.prototype.hasOwnProperty.call(obj, field) && obj[field] !== null
+    );
+  };
+
+  static #objEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  checkStatus = () => {
+    return this.status;
+  };
+
+  showStatusMsg = () => {
+    return this.statusMsg;
+  };
+
+  addProduct = async (product) => {
     try {
-      localProducts = JSON.parse(fs.readFileSync(path, "utf-8"));
-      const ids = localProducts.map(p => p.id)
-      lastId = Math.max(...ids) + 1
+      if (
+        !SmallProducts.#objEmpty(product) &&
+        SmallProducts.#verifyRequiredFields(product)
+      ) {
+        console.log('create')
+        console.log(product)
+        await smallPoductModel.create(product);
+        this.status = 1;
+        this.statusMsg = "Producto registrado en bbdd";
+      } else {
+        console.log('failed')
+        this.status = -1;
+        this.statusMsg = `Faltan campos obligatorios (${SmallProducts.requiredFields.join(
+          ", "
+        )})`;
+      }
+    } catch (err) {
+      this.status = -1;
+      this.statusMsg = `AddProduct: ${err}`;
+    }
+  };
+
+  getProducts = async () => {
+    try {
+      const smallProducts = await smallPoductModel.find().lean();
+      this.status = 1;
+      this.statusMsg = "Productos recuperados";
+      return smallProducts;
     } catch (error) {
-      localProducts = [];
-      lastId = 1
+      this.status = -1;
+      this.statusMsg = `getProducts: ${err}`;
     }
-    this.lastId = lastId;
-    this.products = localProducts;
-  }
+  };
 
-  addProducts(title, price, category, stock) {
-    const newProduct = {
-      id: this.lastId,
-      title: title,
-      price: price,
-      category: category,
-      stock: stock,
-    };
-    let stat;
-
-    if (
-      Object.values(newProduct).some(
-        (value) =>
-          value === undefined || value === null || value === "" || value < 0
-      )
-    ) {
-      stat = {
-        stat: 400,
-        msg: `Todos los campos son obligatorios y los valores numericos deben ser positivos o 0.
-      No se pudo agregar ${newProduct.title} a la lista`,
-      };
+  getProductById = async (id) => {
+    try {
+      const product = smallPoductModel.findById(id);
+      this.status = 1;
+      return product;
+    } catch (err) {
+      this.status = -1;
+      this.statusMsg = `getProductById: ${err}`;
     }
+  };
 
-    const checkId = this.products.find(
-      (product) => product.id === newProduct.id
-    );
-    if (checkId) {
-      console.log(checkId)
-      stat = {
-        stat: 400,
-        msg: `Ya hay un producto con ese id: ${newProduct.id}`,
-      };
-    } else {
-      this.products.push(newProduct);
-      this.lastId++;
-      this.saveProductsToFile();
-      stat = { stat: 200, msg: `Producto agregado correctamente` };
+  updateProduct = async (id, data) => {
+    try {
+      if (data === undefined || Object.keys(data).length === 0) {
+        this.status = -1;
+        this.statusMsg = "Se requiere body con data";
+      } else {
+        const process = await smallPoductModel.updateOne(
+          { _id: new mongoose.Types.ObjectId(id) },
+          data
+        );
+        this.status = 1;
+        process.modifiedCount === 0
+          ? (this.statusMsg = "El ID no existe o no hay cambios por realizar")
+          : (this.statusMsg = "Producto actualizado");
+      }
+    } catch (err) {
+      this.status = -1;
+      this.statusMsg = `updateProduct: ${err}`;
     }
-    return stat;
-  }
+  };
 
-  saveProductsToFile() {
-    fs.writeFileSync(this.path, JSON.stringify(this.products));
-  }
-
-  getProducts() {
-    const allProducts = JSON.parse(fs.readFileSync(this.path, "utf8"));
-    return allProducts;
-  }
-
-  getProductById(id) {
-    const allProducts = JSON.parse(fs.readFileSync(this.path, "utf8"));
-    const product = allProducts.find((product) => product.id === id);
-    let status;
-    if (product) {
-      status = {
-        stat: 200,
-        msg: `Producto con el id ${id}: ${JSON.stringify(product)}`,
-      };
-    } else {
-      status = { stat: 400, msg: `No hay producto con el id: ${id}` };
+  deleteProduct = async (id) => {
+    try {
+      const process = await smallPoductModel.deleteOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      this.status = 1;
+      process.deletedCount === 0
+        ? (this.statusMsg = "El ID no existe")
+        : (this.statusMsg = "Producto borrado");
+    } catch (err) {
+      this.status = -1;
+      this.statusMsg = `deleteProduct: ${err}`;
     }
-    return status;
-  }
-
-  updateProduct(id, updatedProperties) {
-    const productIndex = this.products.findIndex(
-      (product) => product.id === id
-    );
-    let status;
-    if (productIndex !== -1) {
-      const productModified = {
-        ...this.products[productIndex],
-        ...updatedProperties,
-      };
-      this.products[productIndex] = productModified;
-      this.saveProductsToFile();
-      status = { stat: 200, msg: `Producto modificado correctamente` };
-    } else {
-      status = {
-        stat: 400,
-        msg: `No se puede actualizar, no hay producto con el id: ${id}`,
-      };
-    }
-    return status;
-  }
-
-  deleteProduct(id) {
-    const productIndex = this.products.findIndex(
-      (product) => product.id === id
-    );
-    let status;
-    if (productIndex !== -1) {
-      this.products.splice(productIndex, 1);
-      this.saveProductsToFile();
-      status = { stat: 200, msg: `Producto eliminado correctamente` };
-    } else {
-      status = {
-        stat: 400,
-        msg: `No se puede borrar, no hay producto con el id: ${id}`,
-      };
-    }
-    return status;
-  }
+  };
 }
