@@ -4,12 +4,11 @@ mongoose.pluralize(null);
 const collectionProducts = 'smallProducts';
 
 const schema = new mongoose.Schema({
-    id: Number,
-    title: String,
+    title: {type: String},
     description: { type: String, required: true },
-    price: Number,
-    category: String,
-    stock: Number
+    price: {type: Number},
+    category: { type: String},
+    stock: {type: Number}
 });
 
 const smallPoductModel = mongoose.model(collectionProducts, schema);

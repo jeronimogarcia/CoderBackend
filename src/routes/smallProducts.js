@@ -18,12 +18,6 @@ router.get("/realtimeproducts", async (req, res) => {
   });
 });
 
-// router.get("/:pid", (req, res) => {
-//   const pid = +req.params.pid;
-//   const product = smallProductsManager.getProductById(pid);
-//   res.status(product.stat).send(product.msg);
-// });
-
 router.post("/addProduct", async (req, res) => {
   try {
     await manager.addProduct(req.body);
@@ -38,17 +32,19 @@ router.post("/addProduct", async (req, res) => {
   }
 });
 
-// router.put("/:id", (req, res) => {
-//   const id = +req.params.id;
-//   const { fiedlModified } = req.body;
-//   const product = smallProductsManager.updateProduct(id, fiedlModified);
-//   res.status(product.stat).send(product.msg);
-// });
+router.delete("/:id", async (req, res) => {
+  const id = +req.params.id;
+  try {
+    await manager.deleteProduct(id);
 
-// router.delete("/:id", (req, res) => {
-//   const id = +req.params.id;
-//   const product = smallProductsManager.deleteProduct(id);
-//   res.status(product.stat).send(product.msg);
-// });
+    if (manager.checkStatus() === 1) {
+      res.status(200).send({ status: "OK", msg: manager.showStatusMsg() });
+    } else {
+      res.status(400).send({ status: "ERR", error: manager.showStatusMsg() });
+    }
+  } catch (err) {
+    res.status(500).send({ status: "ERR", error: err });
+  }
+});
 
 export default router;

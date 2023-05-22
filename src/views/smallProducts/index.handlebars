@@ -1,3 +1,9 @@
+<style>
+  .formDisplay {
+    display: none;
+  }
+</style>
+
 <div>
   <h1 class="text-center mt-5 mb-5">Lista de smallProducts. Websocket</h1>
   <div class="w-75 m-auto mb-5">
@@ -8,6 +14,7 @@
           <th scope="col">Precio</th>
           <th scope="col">Stock</th>
           <th scope="col">Categoria</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody id="tableBody">
@@ -17,60 +24,143 @@
             <td>${{price}}</td>
             <td>{{stock}}</td>
             <td>{{category}}</td>
+            <td style="width">
+              <button class="edit-button" data-_id="{{_id}}">EDIT</button>
+              <button class="delete-button" data-_id="{{_id}}">DELETE</button>
+            </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 
-  <h1 class="text-center mt-5 mb-2">Agregar Producto</h1>
-  <form class="w-75 m-auto" id="form"> 
-  <div class="mb-3">
-    <label class="form-label">Nombre Producto</label>
-    <input type="text" class="form-control" id="exampleName">
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Price</label>
-    <input type="number" class="form-control" id="examplePrice">
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Categoria</label>
-    <input type="text" class="form-control" id="exampleCategory">
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Stock</label>
-    <input type="number" class="form-control" id="exampleStock">
+  <div class="w-75 m-auto formDisplay" id="edit-Form">
+    <h1 class="text-center mt-5 mb-2">Editar producto</h1>
+    <form id="formProducto">
+      <div class="mb-3">
+        <label class="form-label">Nombre Producto</label>
+        <input type="text" class="form-control" id="editName" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" class="form-control" id="editPrice" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Categoria</label>
+        <input type="text" class="form-control" id="editCategory" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input type="number" class="form-control" id="editStock" />
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+      </div>
+    </form>
   </div>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+  <div class="w-75 m-auto">
+    <h1 class="text-center mt-5 mb-2">Agregar Producto</h1>
+    <form id="form">
+      <div class="mb-3">
+        <label class="form-label">Nombre Producto</label>
+        <input type="text" class="form-control" id="exampleName" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" class="form-control" id="examplePrice" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Categoria</label>
+        <input type="text" class="form-control" id="exampleCategory" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input type="number" class="form-control" id="exampleStock" />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+  </div>
 
 </div>
+
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"
 ></script>
 <script>
   const ws = io('ws://localhost:8000'); 
+  const form = document.getElementById('form'); 
+  const nameInput = document.getElementById('exampleName'); 
+  const priceInput =  document.getElementById('examplePrice'); 
+  const categoryInput = document.getElementById('exampleCategory'); 
+  const stockInput = document.getElementById('exampleStock'); 
+  const updateForm = document.getElementById('edit-Form');
+  const nameEditInput = document.getElementById('editName'); 
+  const priceEditInput =  document.getElementById('editPrice'); 
+  const categoryEditInput = document.getElementById('editCategory'); 
+  const stockEditInput = document.getElementById('editStock'); 
+  let targetEditId = ''
 
-  const form = document.getElementById('form');
-  const nameInput = document.getElementById('exampleName');
-  const priceInput = document.getElementById('examplePrice');
-  const categoryInput = document.getElementById('exampleCategory');
-  const stockInput = document.getElementById('exampleStock');
+  function deleteProduct(event) { 
+    const button = event.target 
+    const id = button.dataset._id 
+    ws.emit('deleteProduct', id) 
+  } 
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const newProduct = {
-      title: nameInput.value,
-      price: priceInput.value,
-      category: categoryInput.value,
-      description: 'New Description',
-      stock: stockInput.value
-    }
-    ws.emit('newProduct', newProduct);
+  function editForm(event) {
+    toogleEditForm()
+    const _id = event.target.getAttribute('data-_id');
+    targetEditId = _id
+  } 
+
+  function toogleEditForm() {
+    const editForm = document.getElementById('edit-Form')
+    editForm.classList.toggle('formDisplay');
+  }
+
+  const deleteButtons = document.querySelectorAll('.delete-button')
+  deleteButtons.forEach(button => { 
+    button.addEventListener('click', deleteProduct) 
+  }) 
+
+  const editButtons = document.querySelectorAll('.edit-button')
+  editButtons.forEach(button => { 
+    button.addEventListener('click', editForm) 
   })
 
-  ws.on('newList', function(newList) {
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault(); 
+    const newProduct = { 
+      title: nameInput.value, 
+      price: priceInput.value, 
+      category: categoryInput.value, 
+      description: 'New Description', 
+      stock: stockInput.value 
+    } 
+    ws.emit('newProduct', newProduct); 
+  })
+
+  updateForm.addEventListener('submit', function(e) {
+    e.preventDefault(); 
+    const updatedProduct = {
+      title: nameEditInput.value, 
+      price: priceEditInput.value, 
+      category: categoryEditInput.value,
+      stock: stockEditInput.value 
+    }
+    const id = targetEditId
+    ws.emit('updateProduct', id, updatedProduct);
+  })
+
+  ws.on('updateTable', function(newList) { 
+   location.reload() 
+  })
+
+</script>
+
+{{! function updateTable(newList) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = ''; 
 
@@ -93,7 +183,16 @@
     categoryTd.textContent = product.category;
     row.appendChild(categoryTd);
 
+    const buttonsTd = document.createElement('td');
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'DELETE';
+    deleteButton.classList.add('delete-button');
+    deleteButton.dataset._id = `${product._id}`;
+    deleteButton.addEventListener('click', deleteProduct)
+
+    buttonsTd.appendChild(deleteButton);
+    row.appendChild(buttonsTd);
+
     tableBody.appendChild(row); 
     });
-  })
-</script>
+  } }}

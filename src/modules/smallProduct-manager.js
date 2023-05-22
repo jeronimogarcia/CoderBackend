@@ -40,8 +40,6 @@ export class SmallProducts {
         !SmallProducts.#objEmpty(product) &&
         SmallProducts.#verifyRequiredFields(product)
       ) {
-        console.log('create')
-        console.log(product)
         await smallPoductModel.create(product);
         this.status = 1;
         this.statusMsg = "Producto registrado en bbdd";

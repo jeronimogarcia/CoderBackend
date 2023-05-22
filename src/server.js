@@ -14,7 +14,6 @@ const MONGO_URL = process.env.MONGODB || 'mongodb://127.0.0.1:27017'
 // Servidores
 const app = express();
 
-
 const httpServer = app.listen(WS_PORT, () => {
   console.log(`Servidor socketio iniciado en puerto ${WS_PORT}`);
 });
@@ -49,9 +48,21 @@ try {
 // Eventos socket.io
 io.on("connection", (socket) => {
   console.log('Conexion realizada')
+  // socket.on("newProduct", async (newProduct) => {
+  //   manager.addProduct(newProduct)
+  //   const newList = await manager.getProducts();
+  //   socket.emit("newList", newList);
+  // });
   socket.on("newProduct", async (newProduct) => {
     manager.addProduct(newProduct)
-    const newList = await manager.getProducts();
-    socket.emit("newList", newList);
+    socket.emit("updateTable");
+  });
+  socket.on("deleteProduct", async (id) => {
+    manager.deleteProduct(id)
+    socket.emit("updateTable");
+  });
+  socket.on("updateProduct", async (id, updatedProduct) => {
+    manager.updateProduct(id, updatedProduct)
+    socket.emit("updateTable");
   });
 });
