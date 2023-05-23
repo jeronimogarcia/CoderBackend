@@ -5,7 +5,7 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import smallProducts, { manager } from "./routes/smallProducts.js";
 import chatMessages, { chatManager } from "./routes/chatMessages.js";
-
+import { __dirname } from './utils.js';
 
 // Puertos
 dotenv.config({ path: "./src/config/config.env" });
@@ -36,6 +36,8 @@ app.use("/", chatMessages);
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
+
+app.use('/externaljs', express.static(`${__dirname}/externaljs`));
 
 try {
   await mongoose.connect(MONGO_URL)
