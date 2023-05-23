@@ -22,7 +22,9 @@ const httpServer = app.listen(WS_PORT, () => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
+    methods: ["PUT", "GET", "POST", "DELETE", "OPTIONS"],
+    credentials: false
   },
 });
 
