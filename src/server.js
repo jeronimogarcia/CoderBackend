@@ -5,14 +5,13 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import smallProducts, { manager } from "./routes/smallProducts.js";
 import chatMessages, { chatManager } from "./routes/chatMessages.js";
-import { __dirname } from './utils.js';
 
 // Puertos
 dotenv.config({ path: "./src/config/config.env" });
 const PORT = process.env.PORT || 3000;
 const WS_PORT = 8000;
-const MONGO_URL = process.env.MONGODB || 'mongodb+srv://jeroCoder:xQNN2AUgBHIbX6VJ@codercluster.ygft8c4.mongodb.net/ecommerce'
-
+const MONGO_URL = process.env.MONGODB || 'mongodb+srv://jeroCoder:mFZ9KlmesEUSqrik@codercluster.ygft8c4.mongodb.net/ecommerce'
+                         
 // Servidores
 const app = express();
 
@@ -22,7 +21,7 @@ const httpServer = app.listen(WS_PORT, () => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000",
   },
 });
 
@@ -36,8 +35,6 @@ app.use("/", chatMessages);
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
-
-app.use('/externaljs', express.static(`${__dirname}/externaljs`));
 
 try {
   await mongoose.connect(MONGO_URL)
@@ -53,11 +50,6 @@ try {
 // Eventos socket.io
 io.on("connection", (socket) => {
   console.log('Conexion realizada')
-  // socket.on("newProduct", async (newProduct) => {
-  //   manager.addProduct(newProduct)
-  //   const newList = await manager.getProducts();
-  //   socket.emit("newList", newList);
-  // });
   socket.on("newProduct", async (newProduct) => {
     manager.addProduct(newProduct)
     socket.emit("updateTable");
@@ -71,9 +63,7 @@ io.on("connection", (socket) => {
     socket.emit("updateTable");
   });
   socket.on('msg', async(data) => {
-    const msgs = await chatManager.addMsg({...data, created: new Date()})
-    console.log(data)
-    // socket.emit('msgUpdate', data)
+    await chatManager.addMsg({...data, created: new Date()})
     io.emit('msgUpdate', data)
   })
 });

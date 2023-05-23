@@ -85,9 +85,7 @@
 
 </div>
 
-<script
- src="../../externaljs/cloudfare.js"
-></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 <script>
   const ws = io('ws://localhost:8000'); 
   const form = document.getElementById('form'); 
@@ -157,42 +155,4 @@
   ws.on('updateTable', function(newList) { 
    location.reload() 
   })
-
 </script>
-
-{{! function updateTable(newList) {
-    const tableBody = document.getElementById('tableBody');
-    tableBody.innerHTML = ''; 
-
-    newList.forEach(function (product){
-    const row = document.createElement('tr');
-
-    const nameTd = document.createElement('td');
-    nameTd.textContent = product.title;
-    row.appendChild(nameTd);
-
-    const priceTd = document.createElement('td');
-    priceTd.textContent = '$' + product.price;
-    row.appendChild(priceTd);
-
-    const stockTd = document.createElement('td');
-    stockTd.textContent = product.stock;
-    row.appendChild(stockTd);
-
-    const categoryTd = document.createElement('td');
-    categoryTd.textContent = product.category;
-    row.appendChild(categoryTd);
-
-    const buttonsTd = document.createElement('td');
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'DELETE';
-    deleteButton.classList.add('delete-button');
-    deleteButton.dataset._id = `${product._id}`;
-    deleteButton.addEventListener('click', deleteProduct)
-
-    buttonsTd.appendChild(deleteButton);
-    row.appendChild(buttonsTd);
-
-    tableBody.appendChild(row); 
-    });
-  } }}
