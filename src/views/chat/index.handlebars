@@ -1,0 +1,51 @@
+<div>
+  <h1>Bienvenidos al chat</h1>
+  <div>
+    <input type="text" id="chat-box" />
+  </div>
+  <div id="msg-log">
+    {{#each data}}
+         <p>{{email}}: {{msg}}</p>
+        {{/each}}
+  </div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  const ws = io('ws://localhost:8000'); 
+  
+  let user;
+  const chatBox = document.getElementById('chat-box')
+  const messagesLog = document.getElementById('msg-log')
+
+  ws.on('msgUpdate', (data) => {
+      console.log('Msg recibido')
+      console.log(data, 'update')
+      messagesLog.innerHTML = `${messagesLog.innerHTML}<br>${data.email}: ${data.msg}`
+    });
+
+  const swalConfig = {
+    title: 'Autenticacion',
+    text: 'Indique email usuario',
+    input: 'text',
+    inputValidator: (value) => {
+      return !value && 'Necesitas autenticarte con email'
+    },
+    allowOutsideClick: false
+  }
+
+  Swal.fire(swalConfig).then(res => user = res.value)
+
+  chatBox.addEventListener('keyup', evt => {
+    if(evt.key === 'Enter') {
+      if(chatBox.value.trim().length > 0) {
+        ws.emit('msg', {email: user, msg: chatBox.value})
+        chatBox.value = ''
+      }
+    }
+  })
+</script>

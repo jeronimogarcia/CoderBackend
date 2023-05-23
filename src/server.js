@@ -4,12 +4,14 @@ import mongoose from 'mongoose'
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import smallProducts, { manager } from "./routes/smallProducts.js";
+import chatMessages, { chatManager } from "./routes/chatMessages.js";
+
 
 // Puertos
 dotenv.config({ path: "./src/config/config.env" });
 const PORT = process.env.PORT || 3000;
 const WS_PORT = 8000;
-const MONGO_URL = process.env.MONGODB || 'mongodb://127.0.0.1:27017'
+const MONGO_URL = process.env.MONGODB || 'mongodb+srv://jeroCoder:xQNN2AUgBHIbX6VJ@codercluster.ygft8c4.mongodb.net/ecommerce'
 
 // Servidores
 const app = express();
@@ -28,6 +30,7 @@ const io = new Server(httpServer, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", smallProducts);
+app.use("/", chatMessages);
 
 // Handlebars
 app.engine("handlebars", engine());
@@ -65,4 +68,10 @@ io.on("connection", (socket) => {
     manager.updateProduct(id, updatedProduct)
     socket.emit("updateTable");
   });
+  socket.on('msg', async(data) => {
+    const msgs = await chatManager.addMsg({...data, created: new Date()})
+    console.log(data)
+    // socket.emit('msgUpdate', data)
+    io.emit('msgUpdate', data)
+  })
 });
