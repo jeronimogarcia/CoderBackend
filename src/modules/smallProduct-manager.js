@@ -56,12 +56,24 @@ export class SmallProducts {
     }
   };
 
-  getProducts = async () => {
+  getProductsWithPaginated = async (filter, pageAndLimit) => {
     try {
-      const smallProducts = await smallPoductModel.find().lean();
+      const paginatedProducts = await smallPoductModel.paginate(filter, pageAndLimit)
       this.status = 1;
       this.statusMsg = "Productos recuperados";
-      return smallProducts;
+      return paginatedProducts.docs;
+    } catch (error) {
+      this.status = -1;
+      this.statusMsg = `getProducts: ${err}`;
+    }
+  };
+
+  getProducts = async () => {
+    try {
+      const smallProducts = await smallPoductModel.find().lean()
+      this.status = 1;
+      this.statusMsg = "Productos recuperados";
+      return smallProducts
     } catch (error) {
       this.status = -1;
       this.statusMsg = `getProducts: ${err}`;

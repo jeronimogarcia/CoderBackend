@@ -5,7 +5,12 @@ const router = Router();
 export const manager = new SmallProducts();
 
 router.get("/", async (req, res) => {
-  const smallProducts = await manager.getProducts();
+  const {limit = 10, page = 1, order, filterProp, filterName} = req.query
+  let filter = filterName && filterProp ? {[filterProp]: filterName} : {}
+  let options = { lean: true, limit: +limit || 10, page: +page || 1}
+  order ? options['sort'] = {'price': order} : delete options['sort']
+
+  const smallProducts = await manager.getProductsWithPaginated(filter, options);
   res.render("index", {
     products: smallProducts,
   });

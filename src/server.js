@@ -29,7 +29,7 @@ const io = new Server(httpServer, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", smallProducts);
-app.use("/", chatMessages);
+app.use("/api", chatMessages);
 
 // Handlebars
 app.engine("handlebars", engine());
