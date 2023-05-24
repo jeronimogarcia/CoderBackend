@@ -1,3 +1,9 @@
+<style>
+  .formTd {
+    width: 10%;
+  }
+</style>
+
 <div>
   <h1 class="text-center mt-5 mb-5">Lista de productos</h1>
   <div class="w-75 m-auto">
@@ -8,6 +14,8 @@
           <th scope="col">Precio</th>
           <th scope="col">Stock</th>
           <th scope="col">Categoria</th>
+          <th scope="col">Cantidad a comprar</th>
+          <th scope="col">Agregar al carrito</th>
         </tr>
       </thead>
       <tbody>
@@ -17,9 +25,72 @@
             <td>${{price}}</td>
             <td>{{stock}}</td>
             <td>{{category}}</td>
+            <td class="formTd">
+              <input class="quantity-input" id='input{{_id}}' type="number"/>
+            </td>
+            <td class="formTd">
+              <button class="add-button" data-_id="{{_id}}">AGREGAR</button>
+            </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
+     <h2 class="text-center mt-5 mb-5">Carrito</h2>
+     <table class="table table-sm table-bordered table-dark w-60%">
+      <thead>
+        <tr>
+          <th scope="col">Id Producto</th>
+          <th scope="col">Quantity</th>
+        </tr>
+      </thead>
+      <tbody id="carritoBody">
+      </tbody>
+    </table>
+    <button id="cart-button">Mandar carrito a la BBDD</button>
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script>
+  const ws = io('ws://localhost:8000'); 
+  let cart = []
+  const carritoBody = document.getElementById('carritoBody')
+
+  const addToCart = (e) => {
+    const button = event.target
+    const id = button.dataset._id
+    const inputId = `input${id}`
+    const input = document.getElementById(inputId)
+    const inputValue = input.value
+    if(input.value > 0){
+      cart.push({id: id, quantity: +inputValue})
+      carritoBody.innerHTML = `${carritoBody.innerHTML}<tr>
+        <td>${id}</td>
+        <td>${inputValue}</td>
+      </tr>`
+      input.value = ''
+    }
+  }
+
+  const addButtons = document.querySelectorAll('.add-button')
+  addButtons.forEach(button => { 
+    button.addEventListener('click', addToCart) 
+  }) 
+
+  function deleteProduct(event) { 
+    const button = event.target 
+    const id = button.dataset._id 
+    ws.emit('deleteProduct', id) 
+  } 
+
+  function saveToDB() {
+    if(cart.length > 0){
+      console.log(cart)
+      ws.emit('cart', cart)
+    }
+  };
+
+  const cartButton = document.getElementById('cart-button')
+  cartButton.addEventListener('click', saveToDB)
+
+</script>

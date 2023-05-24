@@ -5,6 +5,7 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import smallProducts, { manager } from "./routes/smallProducts.js";
 import chatMessages, { chatManager } from "./routes/chatMessages.js";
+import cart, { cartManager } from "./routes/cart.js";
 
 // Puertos
 dotenv.config({ path: "./src/config/config.env" });
@@ -30,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", smallProducts);
 app.use("/api", chatMessages);
+app.use("/cart", cart);
 
 // Handlebars
 app.engine("handlebars", engine());
@@ -65,5 +67,8 @@ io.on("connection", (socket) => {
   socket.on('msg', async(data) => {
     await chatManager.addMsg({...data, created: new Date()})
     io.emit('msgUpdate', data)
+  })
+  socket.on('cart', async(list) => {
+    await cartManager.addCart({products: list})
   })
 });
