@@ -41,7 +41,6 @@ router.delete("/:id", async (req, res) => {
   const id = +req.params.id;
   try {
     await manager.deleteProduct(id);
-
     if (manager.checkStatus() === 1) {
       res.status(200).send({ status: "OK", msg: manager.showStatusMsg() });
     } else {

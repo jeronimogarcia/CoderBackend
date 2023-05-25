@@ -50,4 +50,16 @@ export class Carts {
       this.statusMsg = `AddProduct: ${err}`;
     }
   };
+
+  
+  getCartById = async (id) => {
+    try {
+      const cart = await cartModel.findById(id).populate('products.product').lean()
+      this.status = 1;
+      return cart;
+    } catch (err) {
+      this.status = -1;
+      this.statusMsg = `getProductById: ${err}`;
+    }
+  };
 }

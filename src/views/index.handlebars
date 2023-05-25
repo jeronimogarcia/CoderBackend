@@ -63,7 +63,7 @@
     const input = document.getElementById(inputId)
     const inputValue = input.value
     if(input.value > 0){
-      cart.push({id: id, quantity: +inputValue})
+      cart.push({product: id, quantity: +inputValue})
       carritoBody.innerHTML = `${carritoBody.innerHTML}<tr>
         <td>${id}</td>
         <td>${inputValue}</td>

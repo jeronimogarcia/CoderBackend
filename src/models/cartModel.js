@@ -6,7 +6,9 @@ const collectionCarts = 'carts';
 const schema = new mongoose.Schema({
     products: {
       type: [{
-        id: { type: String },
+        product: { type: mongoose.Schema.Types.ObjectId,
+        ref: 'smallProducts'
+        },
         quantity: { type: Number }
       }],
     }
