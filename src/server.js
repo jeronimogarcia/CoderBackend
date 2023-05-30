@@ -71,4 +71,16 @@ io.on("connection", (socket) => {
   socket.on('cart', async(list) => {
     await cartManager.addCart({products: list})
   })
+  socket.on('updateProductCart', async(cartId, productId, updatedProduct) => {
+    await cartManager.updateProductInCart(cartId, productId, updatedProduct)
+    socket.emit("updateTable");
+  })
+  socket.on('deleteProduct', async(cartId, productId) => {
+    await cartManager.deleteProduct(cartId, productId)
+    socket.emit("updateTable");
+  })
+  socket.on('deleteAllCart', async(cartId) => {
+    await cartManager.deleteAllCart(cartId)
+    socket.emit("redirect");
+  })
 });

@@ -4,6 +4,17 @@ import { Carts } from "../modules/cart-manager.js";
 const router = Router();
 export const cartManager = new Carts();
 
+router.get('/allCarts', async (req, res) => {
+  try {
+    const carts = await cartManager.getAllCarts();
+    res.render("cart/allCarts", {
+      carts: carts,
+    });
+  } catch (err) {
+    res.status(500).send({ status: "ERR", error: err });
+  }
+})
+
 router.post("/addCart", async (req, res) => {
   try {
     await cartManager.addCart(req.body);

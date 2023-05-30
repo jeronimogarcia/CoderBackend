@@ -11,6 +11,7 @@
       <thead>
         <tr>
           <th scope="col">Producto</th>
+          <th scope="col">Id Producto</th>
           <th scope="col">Precio</th>
           <th scope="col">Stock</th>
           <th scope="col">Categoria</th>
@@ -22,6 +23,7 @@
         {{#each products}}
           <tr>
             <td>{{title}}</td>
+            <td>{{_id}}</td>
             <td>${{price}}</td>
             <td>{{stock}}</td>
             <td>{{category}}</td>
