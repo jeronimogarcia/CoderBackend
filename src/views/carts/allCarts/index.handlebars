@@ -29,7 +29,7 @@
   function checkCart () {
     const button = event.target 
     const id = button.dataset._id 
-    window.location.replace(`http://localhost:3000/cart/${id}`);
+    window.location.replace(`http://localhost:3000/api/carts/${id}`);
   }
 
   const checkButtons = document.querySelectorAll('.check-button')

@@ -7,7 +7,7 @@ export const cartManager = new Carts();
 router.get('/allCarts', async (req, res) => {
   try {
     const carts = await cartManager.getAllCarts();
-    res.render("cart/allCarts", {
+    res.render("carts/allCarts", {
       carts: carts,
     });
   } catch (err) {
@@ -35,7 +35,7 @@ router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const cart = await cartManager.getCartById(id);
-    res.render("cart/index", {
+    res.render("carts/index", {
       products: cart.products,
     });
   } catch (err) {

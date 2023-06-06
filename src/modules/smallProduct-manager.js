@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import smallPoductModel from "../models/smallProductsModel.js";
 
-export class SmallProducts {
+class SmallProducts {
   constructor() {
     this.status = 0;
     this.statusMsg = "Inicializado";
@@ -127,3 +127,5 @@ export class SmallProducts {
     }
   };
 }
+
+export default SmallProducts;

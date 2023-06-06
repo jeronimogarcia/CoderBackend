@@ -12,22 +12,36 @@
     <title>Productos</title>
   </head>
   <body class="bg-light">
+    <div
+      class="d-flex justify-content-end p-3"
+      style="background-color: #f1f1f1;"
+    >
+      <a href="http://localhost:3000/logout" class="btn btn-success"><i
+          class="fas fa-sign-out-alt"
+        ></i>
+        Salir</a>
+    </div>
     <div class="d-flex justify-content-center">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="http://localhost:3000/">Lista Products</a>
+              <a
+                class="nav-link"
+                href="http://localhost:3000"
+              >Lista Products</a>
             </li>
             <li class="nav-item">
               <a
                 class="nav-link"
-                href="http://localhost:3000/realtimeproducts"
+                href="http://localhost:3000/api/manager"
               >Manager Products</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="http://localhost:3000/cart/allCarts">All
-                Carts</a>
+              <a
+                class="nav-link"
+                href="http://localhost:3000/api/carts/allCarts"
+              >All Carts</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="http://localhost:3000/api/chat">Chat</a>
@@ -35,6 +49,8 @@
           </ul>
         </div>
       </nav>
+    </div>
+    <div class="row">
     </div>
     {{{body}}}
     <script

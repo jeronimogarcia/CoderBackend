@@ -4,11 +4,8 @@ import { ChatMessages } from "../modules/chatMessage-manager.js";
 const router = Router();
 export const chatManager = new ChatMessages();
 
-router.get("/chat", async (req, res) => {
+router.get("/", async (req, res) => {
   const data = await chatManager.getMsgs();
-  // res.render("index", {
-  //   msgs: chatMsgs,
-  // });
   res.render('chat/index', { data: data })
 });
 

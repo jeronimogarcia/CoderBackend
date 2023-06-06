@@ -103,7 +103,7 @@
   function deleteProduct(event) { 
     const button = event.target 
     const id = button.dataset._id 
-    ws.emit('deleteProduct', id) 
+    ws.emit('deleteSmallProduct', id) 
   } 
 
   function editForm(event) {
