@@ -15,6 +15,7 @@ import mainRoutes from "./routes/main.routes.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from 'connect-mongo';
+import passport from './auth/passport.strategies.js';
 
 // Variables de entorno
 dotenv.config({ path: "./src/config/config.env" });
@@ -52,13 +53,17 @@ app.use(session({
   store: store,
   secret: SESSIONSECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }))
+
+// passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Endpoints
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/', mainRoutes(io, store, BASE_URL));
+app.use('/', mainRoutes(store, BASE_URL));
 app.use("/api/products", smallProducts);
 app.use("/api/manager", productsManager);
 app.use("/api/chat", chatMessages);

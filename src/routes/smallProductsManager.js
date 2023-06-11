@@ -4,7 +4,7 @@ import SmallProducts from "../modules/smallProduct-manager.js";
 const router = Router();
 export const manager = new SmallProducts();
 const validate = async (req, res, next) => {
-  if (req.session.userValidated && req.session.admin) {
+  if (req.sessionStore.userValidated && req.sessionStore.admin) {
     next();
   } else {
     res.status(401).send({
@@ -35,7 +35,7 @@ router.post("/addProduct", async (req, res) => {
   }
 });
 
-router.delete("/:id",  async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   try {
     await manager.deleteProduct(id);
