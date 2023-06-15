@@ -18,13 +18,6 @@ const productRoutes = (io) => {
     }
   };
 
-  // router.get("/realtimeproducts", validate, async (req, res) => {
-  //   const smallProducts = await manager.getProducts();
-  //   res.render("smallProducts/index", {
-  //     products: smallProducts,
-  //   });
-  // })
-
   router.get("/products", validate, async (req, res) => {
     try {
       const products = await manager.getProducts();
@@ -33,8 +26,6 @@ const productRoutes = (io) => {
       res.status(500).send({ status: "ERR", error: err });
     }
   });
-
-
   
   return router;
 };

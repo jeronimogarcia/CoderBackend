@@ -2,7 +2,7 @@ import { Router } from "express";
 import SmallProducts from "../modules/smallProduct-manager.js";
 import userModel from "../models/userModel.js";
 import { createHash, isValidPassword } from "../utils/utils.js";
-import passport from '../auth/passport.strategies.js';
+import passport from "passport";
 
 const manager = new SmallProducts();
 const BASE_URL = "http://localhost:3000";
@@ -53,6 +53,15 @@ const mainRoutes = (store, baseUrl) => {
     });
   });
 
+  // router.get("/logout", async (req, res) => {
+  //   req.logout((err) => {
+  //     if (err) {
+  //       return next(err);
+  //     }
+  //     res.redirect("/");
+  //   });
+  // });
+
   router.post("/login", async (req, res) => {
     req.sessionStore.userValidated = false;
     const { login_email, login_password } = req.body;
@@ -64,7 +73,6 @@ const mainRoutes = (store, baseUrl) => {
       req.sessionStore.errorMessage = "Clave incorrecta";
       res.redirect(`${BASE_URL}/errorLogin`);
     } else {
-      console.log("req.sessionStore.admin", req.sessionStore.admin);
       req.sessionStore.userValidated = true;
       req.sessionStore.errorMessage = "";
       req.sessionStore.firstName = user.firstName;
@@ -90,23 +98,28 @@ const mainRoutes = (store, baseUrl) => {
     res.render("register/error", {});
   });
 
-  router.post("/register", passport.authenticate('authRegistration', { failureRedirect: '/errorRegister' }), async (req, res) => {
-    const { firstName, lastName, userName, password } = req.body;
+  router.post(
+    "/register",
+    passport.authenticate("authRegistration", {
+      failureRedirect: "/errorRegister",
+    }),
+    async (req, res) => {
+      const { firstName, lastName, userName, password } = req.body;
 
-    if (!firstName || !lastName || !userName || !password)
-      res.status(400).send("Falta campos obligatorios");
+      if (!firstName || !lastName || !userName || !password)
+        res.status(400).send("Falta campos obligatorios");
 
-    const newUser = {
-      firstName: firstName,
-      lastName: lastName,
-      userName: userName,
-      password: createHash(password),
-      created: new Date(),
-    };
-    console.log(newUser);
-    userModel.create(newUser);
-    res.redirect(BASE_URL);
-  });
+      const newUser = {
+        firstName: firstName,
+        lastName: lastName,
+        userName: userName,
+        password: createHash(password),
+        created: new Date(),
+      };
+      userModel.create(newUser);
+      res.redirect(BASE_URL);
+    }
+  );
 
   return router;
 };

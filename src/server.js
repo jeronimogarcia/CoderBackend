@@ -15,7 +15,9 @@ import mainRoutes from "./routes/main.routes.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from 'connect-mongo';
-import passport from './auth/passport.strategies.js';
+import passport from 'passport';
+import githubRoutes from "./routes/github.js";
+import helloRoute from "./routes/hello.js";
 
 // Variables de entorno
 dotenv.config({ path: "./src/config/config.env" });
@@ -60,15 +62,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 // Endpoints
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/', mainRoutes(store, BASE_URL));
 app.use("/api/products", smallProducts);
+app.use('/api/sessions', githubRoutes);
 app.use("/api/manager", productsManager);
 app.use("/api/chat", chatMessages);
 app.use("/api/carts", cart);
 app.use("/api/users", users);
+app.use('/api/hello', helloRoute)
 
 // Handlebars
 app.engine("handlebars", engine());

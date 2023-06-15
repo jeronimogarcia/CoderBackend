@@ -4,7 +4,18 @@ import { Carts } from "../modules/cart-manager.js";
 const router = Router();
 export const cartManager = new Carts();
 
-router.get('/allCarts', async (req, res) => {
+const validate = async (req, res, next) => {
+  if (req.sessionStore.userValidated) {
+    next();
+  } else {
+    res.status(401).send({
+      status: "ERR",
+      error: "No tiene autorización para realizar esta solicitud",
+    });
+  }
+};
+
+router.get('/allCarts', validate,  async (req, res) => {
   try {
     const carts = await cartManager.getAllCarts();
     res.render("carts/allCarts", {
