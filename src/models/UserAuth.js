@@ -61,7 +61,7 @@ schema.methods.getSignedJwtToken = function() {
   })
 }
 
-// Math user entered password to hashed password in database
+// Macth user entered password to hashed password in database
 schema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
