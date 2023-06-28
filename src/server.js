@@ -14,8 +14,8 @@ import usersAuth from "./routes/newAuth.js";
 
 import mainRoutes from "./routes/main.routes.js";
 import cookieParser from "cookie-parser";
-import session from "express-session";
-import MongoStore from "connect-mongo";
+// import session from "express-session";
+// import MongoStore from "connect-mongo";
 
 // Variables de entorno
 dotenv.config({ path: "./src/config/config.env" });
@@ -23,7 +23,6 @@ const PORT = process.env.PORT || 3000;
 const WSPORT = process.env.WS_PORT;
 const MONGO_URL = process.env.MONGODB_URL;
 const SECRET = process.env.COOKIESECRET;
-const SESSIONSECRET = process.env.SESSIONSECRET;
 const BASE_URL = "http://localhost:3000";
 
 // Servidores
@@ -48,24 +47,24 @@ app.use(cookieParser(SECRET));
 // app.use(session({secret: SESSIONSECRET, resave: true, saveUninitialized: true}))
 
 // Store
-const store = MongoStore.create({
-  mongoUrl: MONGO_URL,
-  mongoOptions: {},
-  ttl: 30000,
-});
-app.use(
-  session({
-    store: store,
-    secret: SESSIONSECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+// const store = MongoStore.create({
+//   mongoUrl: MONGO_URL,
+//   mongoOptions: {},
+//   ttl: 30000,
+// });
+// app.use(
+//   session({
+//     store: store,
+//     secret: SESSIONSECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
 
 // Endpoints
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/", mainRoutes(io, store, BASE_URL));
+app.use("/", mainRoutes(io, BASE_URL));
 app.use("/api/products", smallProducts);
 app.use("/api/manager", productsManager);
 app.use("/api/chat", chatMessages);

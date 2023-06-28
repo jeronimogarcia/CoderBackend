@@ -3,18 +3,18 @@ import SmallProducts from "../modules/smallProduct-manager.js";
 
 const router = Router();
 export const manager = new SmallProducts();
-const validate = async (req, res, next) => {
-  if (req.session.userValidated && req.session.admin) {
-    next();
-  } else {
-    res.status(401).send({
-      status: "ERR",
-      error: "No tiene autorización para realizar esta solicitud",
-    });
-  }
-};
+// const validate = async (req, res, next) => {
+//   if (req.session.userValidated && req.session.admin) {
+//     next();
+//   } else {
+//     res.status(401).send({
+//       status: "ERR",
+//       error: "No tiene autorización para realizar esta solicitud",
+//     });
+//   }
+// };
 
-router.get("/", validate, async (req, res) => {
+router.get("/", async (req, res) => {
   const smallProducts = await manager.getProducts();
   res.render("smallProducts/index", {
     products: smallProducts,

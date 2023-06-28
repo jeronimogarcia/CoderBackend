@@ -5,71 +5,32 @@ import SmallProducts from "../modules/smallProduct-manager.js";
 const users = new Users();
 const manager = new SmallProducts();
 
-const mainRoutes = (io, store, baseUrl) => {
+const mainRoutes = (io, baseUrl) => {
   const router = Router();
 
   router.get("/", async (req, res) => {
-    store.get(req.sessionID, async (err, data) => {
-      if (err) console.log(`Error al recuperar datos de sesión (${err})`);
+    const { limit = 10, page = 1, order, filterProp, filterName } = req.query;
+    let filter = filterName && filterProp ? { [filterProp]: filterName } : {};
+    let options = { lean: true, limit: +limit || 10, page: +page || 1 };
+    order ? (options["sort"] = { price: order }) : delete options["sort"];
+    const result = await manager.getProductsWithPaginated(filter, options);
 
-      if (
-        data !== null &&
-        (req.session.userValidated || req.sessionStore.userValidated)
-      ) {
-        const {
-          limit = 10,
-          page = 1,
-          order,
-          filterProp,
-          filterName,
-        } = req.query;
-        let filter =
-          filterName && filterProp ? { [filterProp]: filterName } : {};
-        let options = { lean: true, limit: +limit || 10, page: +page || 1 };
-        order ? (options["sort"] = { price: order }) : delete options["sort"];
-        const result = await manager.getProductsWithPaginated(
-          filter,
-          options
-        );
-        res.render("products/index", {
-          products: result
-        });
-        console.log("Usuario logeado");
-      } else {
-        res.render("login/index", {
-          sessionInfo:
-            req.session.userValidated !== undefined
-              ? req.session
-              : req.sessionStore,
-        });
-      }
-    });
+    // res.render("products/index", {
+    //   products: result
+    // });
+    // console.log("Usuario logeado");
+    // res.render("login/index", {
+    // });
   });
 
   router.get("/logout", async (req, res) => {
-    req.session.userValidated = req.sessionStore.userValidated = false;
-    req.session.destroy((err) => {
-      req.sessionStore.destroy(req.sessionID, (err) => {
-        if (err) console.log(`Error al destruir sesión (${err})`);
-        console.log("Sesión destruída");
-        res.redirect(baseUrl);
-      });
-    });
+    res.redirect(baseUrl);
   });
 
   router.post("/login", async (req, res) => {
     const { login_email, login_password } = req.body;
     const user = await users.validateUser(login_email, login_password);
-    console.log(user)
-    if (user === null) {
-      req.session.userValidated = req.sessionStore.userValidated = false;
-      req.session.errorMessage = req.sessionStore.errorMessage =
-        "Usuario o clave no válidos";
-    } else {
-      req.session.userValidated = req.sessionStore.userValidated = true;
-      req.session.errorMessage = req.sessionStore.errorMessage = "";
-      req.session.admin = user.isAdmin
-    }
+    console.log(user);
     res.redirect(baseUrl);
   });
 
