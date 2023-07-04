@@ -1,56 +1,34 @@
 import { Router } from "express";
 import SmallProducts from "../modules/smallProduct-manager.js";
-import userModel from "../models/userModel.js";
-import { createHash, isValidPassword } from "../utils/utils.js";
-import passport from "passport";
+import { isValidPassword, createHash } from "../utils/validPassword.js";
+import { authentication, authorization } from "../auth/passport.config.js";
+import { generateToken, authToken } from "../auth/jwt.config.js";
+import UserAuth from "../models/UserAuth.js";
 
 const manager = new SmallProducts();
 const BASE_URL = "http://localhost:3000";
 
-const mainRoutes = (store, baseUrl) => {
+const mainRoutes = (io, BASE_URL) => {
   const router = Router();
 
-  router.get("/", async (req, res) => {
-    store.get(req.sessionID, async (err, data) => {
-      if (err) console.log(`Error al recuperar datos de sesión (${err})`);
-
-      if (data !== null && req.sessionStore.userValidated) {
-        const {
-          limit = 10,
-          page = 1,
-          order,
-          filterProp,
-          filterName,
-        } = req.query;
-        let filter =
-          filterName && filterProp ? { [filterProp]: filterName } : {};
-        let options = { lean: true, limit: +limit || 10, page: +page || 1 };
-        order ? (options["sort"] = { price: order }) : delete options["sort"];
-        const result = await manager.getProductsWithPaginated(filter, options);
-        res.render("products/index", {
-          products: result,
-        });
-        console.log("Usuario logeado");
-      } else {
-        res.render("login/index", {
-          sessionInfo:
-            req.sessionStore.userValidated !== undefined
-              ? req.sessionStore
-              : req.sessionStore,
-        });
-      }
+  router.get("/", authentication("jwtAuth"), async (req, res) => {
+    const { limit = 10, page = 1, order, filterProp, filterName } = req.query;
+    let filter = filterName && filterProp ? { [filterProp]: filterName } : {};
+    let options = { lean: true, limit: +limit || 10, page: +page || 1 };
+    order ? (options["sort"] = { price: order }) : delete options["sort"];
+    const result = await manager.getProductsWithPaginated(filter, options);
+    res.render("products/index", {
+      products: result,
     });
   });
 
   router.get("/logout", async (req, res) => {
-    req.sessionStore.userValidated = false;
-    req.session.destroy((err) => {
-      req.sessionStore.destroy(req.sessionID, (err) => {
-        if (err) console.log(`Error al destruir sesión (${err})`);
-        console.log("Sesión destruída");
-        res.redirect(baseUrl);
-      });
-    });
+    res.clearCookie("coder_login_token");
+    res.redirect("/login");
+  });
+
+  router.get("/login", async (req, res) => {
+    res.render("login", {});
   });
 
   // router.get("/logout", async (req, res) => {
@@ -65,25 +43,59 @@ const mainRoutes = (store, baseUrl) => {
   router.post("/login", async (req, res) => {
     req.sessionStore.userValidated = false;
     const { login_email, login_password } = req.body;
-    const user = await userModel.findOne({ userName: login_email });
+    const user = await UserAuth.findOne({ email: login_email }).select(
+      "+password"
+    );
     if (!user) {
-      req.sessionStore.errorMessage = "No se encuentra el usuario";
-      res.redirect(`${BASE_URL}/errorLogin`);
-    } else if (!isValidPassword(user, login_password)) {
-      req.sessionStore.errorMessage = "Clave incorrecta";
-      res.redirect(`${BASE_URL}/errorLogin`);
+      res.redirect("/login");
     } else {
-      req.sessionStore.userValidated = true;
-      req.sessionStore.errorMessage = "";
-      req.sessionStore.firstName = user.firstName;
-      req.sessionStore.lastName = user.lastName;
-      if (user.isAdmin === true) {
-        req.sessionStore.admin = true;
+      if (!isValidPassword(user.password, login_password)) {
+        res.redirect("/login");
       } else {
-        req.sessionStore.admin = false;
+        const date = new Date();
+
+        const userdataForToken = {
+          firstName: user.first_name,
+          lastName: user.last_name,
+          userEmail: user.email,
+          role: user.role,
+        };
+        const token = generateToken(userdataForToken, "24h");
+
+        res
+          .cookie("coder_login_token", token, {
+            maxAge: date.setDate(date.getDate() + 1),
+            secure: false, 
+            httpOnly: true,
+          })
+          .redirect("/");
       }
-      res.redirect(BASE_URL);
     }
+  });
+
+  router.get("/errorLogin", async (req, res) => {
+    res.render("login/error", {});
+  });
+
+  router.get("/register", async (req, res) => {
+    res.render("register/index", {});
+  });
+
+  router.post("/register", async (req, res) => {
+    const { firstName, lastName, userName, password } = req.body;
+
+    if (!firstName || !lastName || !userName || !password)
+      res.status(400).send("Falta campos obligatorios");
+
+    const newUser = {
+      first_name: firstName,
+      last_name: lastName,
+      email: userName,
+      password: createHash(password),
+      role: "user",
+    };
+    UserAuth.create(newUser);
+    res.redirect(BASE_URL);
   });
 
   router.get("/register", async (req, res) => {
@@ -97,29 +109,6 @@ const mainRoutes = (store, baseUrl) => {
   router.get("/errorRegister", async (req, res) => {
     res.render("register/error", {});
   });
-
-  router.post(
-    "/register",
-    passport.authenticate("authRegistration", {
-      failureRedirect: "/errorRegister",
-    }),
-    async (req, res) => {
-      const { firstName, lastName, userName, password } = req.body;
-
-      if (!firstName || !lastName || !userName || !password)
-        res.status(400).send("Falta campos obligatorios");
-
-      const newUser = {
-        firstName: firstName,
-        lastName: lastName,
-        userName: userName,
-        password: createHash(password),
-        created: new Date(),
-      };
-      userModel.create(newUser);
-      res.redirect(BASE_URL);
-    }
-  );
 
   return router;
 };
