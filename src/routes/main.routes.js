@@ -6,7 +6,6 @@ import { generateToken, authToken } from "../auth/jwt.config.js";
 import UserAuth from "../models/UserAuth.js";
 
 const manager = new SmallProducts();
-const BASE_URL = "http://localhost:3000";
 
 const mainRoutes = (io, BASE_URL) => {
   const router = Router();
@@ -31,17 +30,7 @@ const mainRoutes = (io, BASE_URL) => {
     res.render("login", {});
   });
 
-  // router.get("/logout", async (req, res) => {
-  //   req.logout((err) => {
-  //     if (err) {
-  //       return next(err);
-  //     }
-  //     res.redirect("/");
-  //   });
-  // });
-
   router.post("/login", async (req, res) => {
-    req.sessionStore.userValidated = false;
     const { login_email, login_password } = req.body;
     const user = await UserAuth.findOne({ email: login_email }).select(
       "+password"
@@ -71,14 +60,6 @@ const mainRoutes = (io, BASE_URL) => {
           .redirect("/");
       }
     }
-  });
-
-  router.get("/errorLogin", async (req, res) => {
-    res.render("login/error", {});
-  });
-
-  router.get("/register", async (req, res) => {
-    res.render("register/index", {});
   });
 
   router.post("/register", async (req, res) => {

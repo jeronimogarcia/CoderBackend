@@ -47,17 +47,11 @@ app.use(cookieParser(SECRET));
 initPassport();
 app.use(passport.initialize());
 
-// passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-
 // Endpoints
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", mainRoutes(io, BASE_URL));
 app.use("/api/products", smallProducts);
-app.use('/api/sessions', githubRoutes);
 app.use("/api/manager", productsManager);
 app.use("/api/chat", chatMessages);
 app.use("/api/carts", cart);
