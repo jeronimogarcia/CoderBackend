@@ -10,10 +10,12 @@ import chatMessages from "./routes/chatMessages.js";
 import productsManager from "./routes/smallProductsManager.js";
 import users from "./routes/users.js";
 import cart, { cartManager } from "./routes/cart.js";
-import usersAuth from "./routes/newAuth.js";
+// import usersAuth from "./routes/newAuth.js";
 
 import mainRoutes from "./routes/main.routes.js";
 import cookieParser from "cookie-parser";
+import passport from 'passport';
+import { initPassport } from './auth/passport.config.js';
 // import session from "express-session";
 // import MongoStore from "connect-mongo";
 
@@ -42,24 +44,8 @@ const io = new Server(httpServer, {
 
 // Parseo de cookies
 app.use(cookieParser(SECRET));
-
-// Manejo de sessions
-// app.use(session({secret: SESSIONSECRET, resave: true, saveUninitialized: true}))
-
-// Store
-// const store = MongoStore.create({
-//   mongoUrl: MONGO_URL,
-//   mongoOptions: {},
-//   ttl: 30000,
-// });
-// app.use(
-//   session({
-//     store: store,
-//     secret: SESSIONSECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
+initPassport();
+app.use(passport.initialize());
 
 // Endpoints
 app.use(express.json());
@@ -70,7 +56,7 @@ app.use("/api/manager", productsManager);
 app.use("/api/chat", chatMessages);
 app.use("/api/carts", cart);
 app.use("/api/users", users);
-app.use("/api/usersAuth", usersAuth);
+// app.use("/api/usersAuth", usersAuth);
 
 // Handlebars
 app.engine("handlebars", engine());

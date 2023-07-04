@@ -1,19 +1,29 @@
 import { Router } from "express";
 import { Carts } from "../modules/cart-manager.js";
+import {
+  authentication,
+  authorization,
+  authAdmin,
+} from "../auth/passport.config.js";
 
 const router = Router();
 export const cartManager = new Carts();
 
-router.get('/allCarts', async (req, res) => {
-  try {
-    const carts = await cartManager.getAllCarts();
-    res.render("carts/allCarts", {
-      carts: carts,
-    });
-  } catch (err) {
-    res.status(500).send({ status: "ERR", error: err });
+router.get(
+  "/allCarts",
+  authentication("jwtAuth"),
+  authAdmin(),
+  async (req, res) => {
+    try {
+      const carts = await cartManager.getAllCarts();
+      res.render("carts/allCarts", {
+        carts: carts,
+      });
+    } catch (err) {
+      res.status(500).send({ status: "ERR", error: err });
+    }
   }
-})
+);
 
 router.post("/addCart", async (req, res) => {
   try {

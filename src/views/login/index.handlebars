@@ -18,11 +18,11 @@
 
             <div class="form-group mb-4">
                 <label for="login_password">Clave</label>
-                <input type="password" class="form-control" id="login_password" name="login_password" required="required">
+                <input type="password" class="form-control" id="login_password" name="login_password"  placeholder="Password" required="required">
             </div>
 
             <div class="form-group mb-4">
-                <label class="form-check-label" for="exampleCheck1">Registrar nuevo usuario</label>
+                <a class="form-check-label" href="http://localhost:3000/register">¿No tienes usuario? Registrarse</a>
             </div>
             <button type="submit" class="btn btn-success"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
             
@@ -34,8 +34,5 @@
 </div>
 
 <script>
-    // Estamos utilizando JS Vanilla, es decir, ningún framework
-    // Simplemente tomamos la referencia del elemento que nos interesa, utilizando el id
-    // indicado en el html, y aplicamos el método requerido (dar el foco en este caso)
     document.getElementById('login_email').focus();
 </script>

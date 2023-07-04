@@ -1,20 +1,11 @@
 import { Router } from "express";
 import SmallProducts from "../modules/smallProduct-manager.js";
+import {authentication, authorization, authAdmin } from '../auth/passport.config.js'
 
 const router = Router();
 export const manager = new SmallProducts();
-// const validate = async (req, res, next) => {
-//   if (req.session.userValidated && req.session.admin) {
-//     next();
-//   } else {
-//     res.status(401).send({
-//       status: "ERR",
-//       error: "No tiene autorización para realizar esta solicitud",
-//     });
-//   }
-// };
 
-router.get("/", async (req, res) => {
+router.get("/", authentication("jwtAuth"), authAdmin(), async (req, res) => {
   const smallProducts = await manager.getProducts();
   res.render("smallProducts/index", {
     products: smallProducts,
